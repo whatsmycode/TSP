@@ -31,6 +31,7 @@ public:
 
 protected:  // 控件条嵌入成员
 	CToolBar          m_wndToolBar;
+public:
 	CStatusBar        m_wndStatusBar;
 
 // 生成的消息映射函数

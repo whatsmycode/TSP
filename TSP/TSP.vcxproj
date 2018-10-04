@@ -185,7 +185,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Graph.h" />
+    <ClInclude Include="GA.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Point2d.h" />
     <ClInclude Include="Resource.h" />
@@ -196,7 +196,7 @@
     <ClInclude Include="TSPView.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Graph.cpp" />
+    <ClCompile Include="GA.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="Point2d.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -224,4 +224,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="TSP.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

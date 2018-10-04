@@ -1,7 +1,9 @@
 
 // TSPDoc.h : CTSPDoc 类的接口
 //
-
+#include <memory>
+#include <vector>
+#include "Point2d.h"
 
 #pragma once
 
@@ -45,4 +47,9 @@ protected:
 	// 用于为搜索处理程序设置搜索内容的 Helper 函数
 	void SetSearchContent(const CString& value);
 #endif // SHARED_HANDLERS
+public:
+	// 存储结点
+	std::shared_ptr<std::vector<CPoint2d>> m_pNodes;
+	double OnAlgGreedy();
+	std::shared_ptr<std::vector<size_t>> m_pResult;
 };

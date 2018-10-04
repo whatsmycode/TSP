@@ -39,10 +39,10 @@
     <ClInclude Include="Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Graph.h">
+    <ClInclude Include="Point2d.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Point2d.h">
+    <ClInclude Include="GA.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -62,10 +62,10 @@
     <ClCompile Include="TSPView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Graph.cpp">
+    <ClCompile Include="Point2d.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Point2d.cpp">
+    <ClCompile Include="GA.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
