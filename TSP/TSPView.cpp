@@ -35,6 +35,7 @@ ON_COMMAND(ID_ALG_Greedy, &CTSPView::OnAlgGreedy)
 ON_WM_RBUTTONDOWN()
 ON_WM_RBUTTONUP()
 ON_WM_MOUSEMOVE()
+ON_COMMAND(ID_MIN_COST_TREE, &CTSPView::OnMinCostTree)
 END_MESSAGE_MAP()
 
 // CTSPView 构造/析构
@@ -105,6 +106,7 @@ void CTSPView::OnDraw(CDC* pDC)
 		pDC->LineTo(allF);
 		ReleaseDC(pDC);
 	}
+	
 }
 
 
@@ -160,16 +162,12 @@ BOOL CTSPView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	double scale = CPoint2d::GetScale();
 
 	if (zDelta > 0)
-		scale += 0.1;
+		scale *= 1.1;
 	else
-		scale -= 0.1;
+		scale *= 0.9;
 
-	if (scale < 0.1)
-		scale = 0.11;
-	else if (scale > 0.91)
-		scale = 0.9;
-	else
-		CPoint2d::SetScale(scale);
+	CPoint2d::SetScale(scale);
+
 	Invalidate();
 	CString msg;
 	msg.Format(_T("当前比例 %.1lf"), scale);
@@ -227,4 +225,21 @@ void CTSPView::OnMouseMove(UINT nFlags, CPoint point)
 		Invalidate();
 	}
 	CView::OnMouseMove(nFlags, point);
+}
+
+
+void CTSPView::OnMinCostTree()
+{
+	// TODO: 在此添加命令处理程序代码
+	CTSPDoc* pDoc = GetDocument();
+	DWORD st = GetTickCount();
+	CString cal("计算中...");
+	TextToStatusBar(cal, 0);
+	//double dist = pDoc->OnAlgGreedy();
+	pDoc->OnMinCostTree();
+	DWORD end = GetTickCount();
+	Invalidate();
+	CString str;
+	str.Format(_T("最小生成树  耗时 %d ms"), end - st);
+	TextToStatusBar(str, 0);
 }

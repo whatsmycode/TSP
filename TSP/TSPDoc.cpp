@@ -28,6 +28,8 @@ IMPLEMENT_DYNCREATE(CTSPDoc, CDocument)
 
 BEGIN_MESSAGE_MAP(CTSPDoc, CDocument)
 //	ON_COMMAND(ID_ALG_Greedy, &CTSPDoc::OnAlgGreedy)
+ON_COMMAND(ID_MIN_COST_TREE, &CTSPDoc::OnMinCostTree)
+ON_COMMAND(ID_2OPT, &CTSPDoc::On2opt)
 END_MESSAGE_MAP()
 
 
@@ -36,7 +38,6 @@ END_MESSAGE_MAP()
 CTSPDoc::CTSPDoc():m_pNodes(new std::vector<CPoint2d>()),m_pResult(new std::vector<size_t>())
 {
 	// TODO: 在此添加一次性构造代码
-	
 }
 
 CTSPDoc::~CTSPDoc()
@@ -65,45 +66,49 @@ void CTSPDoc::Serialize(CArchive& ar)
 	else
 	{
 		// TODO: 在此添加加载代码
-		CFile* file = ar.GetFile();
-		char* buffer = new char[file->GetLength()];
+		CFile* file = ar.GetFile();//获取当前文件
+		char* buffer = new char[file->GetLength()];//创建临时数组
 		file->Read(buffer, file->GetLength());
 		std::stringstream ss(buffer);
 		delete[] buffer;
 
 		std::string line;
-		bool validData = false;
-		while (std::getline(ss, line))
+		bool validData = false;//判断数据是否有效
+		while (std::getline(ss, line))//读取一行数据
 		{
 			std::stringstream localSS(line);
 			std::string first;
-			localSS >> first;
+			localSS >> first;//得到第一个字符串
 			
-			if (!isdigit(first[0]))
+			if (!isdigit(first[0]))//第一个字符串以字母开头
 			{
 				if (first == "NODE_COORD_SECTION")
 				{
-					validData = true;
-					m_pNodes->clear();
-					m_pResult->clear();
+					validData = true;//数据有效
+					m_pNodes->clear();//清空上一个文件保存的数据
+					m_pResult->clear();//清空之前的路径结果
 				}
 				if (first == "EOF")
-					break;
+					break;//读到文件尾，跳出
 				continue;
 			}
-			else if (validData)
+			else if (validData)//开始读取数据
 			{
 				size_t id = stoi(first);
-				double xx, yy;
+				double xx, yy;//得到x坐标和y坐标
 				localSS >> xx >> yy;
 				m_pNodes->push_back(CPoint2d(id,xx, yy));
 			}
 			else
 			{
 				MessageBox(*AfxGetMainWnd(), _T("不支持的数据格式"), _T("错误"), WM_CLOSE);
-				ExitProcess(1);
+				ExitProcess(1);//读到不支持的文件格式直接结束程序
 				return;
 			}
+		}
+		if (!m_pNodes->empty())
+		{
+			graph = CGraph(*m_pNodes);
 		}
 	}
 }
@@ -186,21 +191,6 @@ double CTSPDoc::OnAlgGreedy()
 	if (m_pNodes->empty())
 		return 0.0;
 	DWORD startTM = GetTickCount();
-	std::vector<std::vector<double>>Graph(m_pNodes->size(), std::vector<double>(m_pNodes->size(),65535.0));
-	//初始化图
-	const size_t num = m_pNodes->size();
-	for (size_t i = 0; i < num; ++i)
-	{
-		for (size_t j = 0; j < num; ++j)
-		{
-			if (i != j)
-			{
-				Graph[i][j] = Distance((*m_pNodes)[i], (*m_pNodes)[j]);
-			}
-			else
-				Graph[i][j] = 0;
-		}
-	}
 
 
 	double totalMinDist = INT_MAX;
@@ -212,18 +202,18 @@ double CTSPDoc::OnAlgGreedy()
 		size_t i = k;
 		size_t j = 0;
 		double curTotalDist = 0.0;
-		while (Graph[i][i] != -1)
+		while (graph.IsVisited(i)==false)
 		{
-			Graph[i][i] = -1;
+			graph.SetVisited(i);
 			size_t minV = 0;
 
 			double minDist = INT_MAX;
 
-			for (; j < Graph[i].size(); ++j)
+			for (; j < graph.size(); ++j)
 			{
-				if (Graph[j][j] != -1 && Graph[i][j] < minDist)
+				if (graph.IsVisited(j) == false && graph.GetElement(i,j) < minDist)
 				{
-					minDist = Graph[i][j];
+					minDist = graph.GetElement(i, j);
 					minV = j;
 				}
 			}
@@ -237,27 +227,23 @@ double CTSPDoc::OnAlgGreedy()
 			totalMinDist = curTotalDist;
 			minStartP = i;
 		}
-
-		for (size_t i = 0; i < m_pNodes->size(); ++i)
-		{
-			Graph[i][i] = 0;
-		}
+		graph.Reset();
 	}
 
 	size_t i = minStartP;
 	size_t j = 0;
-	while (Graph[i][i] != -1)
+	while (graph.IsVisited(i) == false)
 	{
-		Graph[i][i] = -1;
+		graph.SetVisited(i);
 		size_t minV = 0;
 
 		double minDist = INT_MAX;
 		m_pResult->push_back(i);
-		for (; j < Graph[i].size(); ++j)
+		for (; j < graph.size(); ++j)
 		{
-			if (Graph[j][j] != -1 && Graph[i][j] < minDist)
+			if (graph.IsVisited(j) == false && graph.GetElement(i, j) < minDist)
 			{
-				minDist = Graph[i][j];
+				minDist = graph.GetElement(i, j);
 				minV = j;
 			}
 		}
@@ -266,4 +252,56 @@ double CTSPDoc::OnAlgGreedy()
 		j = 0;
 	}
 	return totalMinDist;
+}
+
+
+void CTSPDoc::OnMinCostTree()
+{
+	// TODO: 在此添加命令处理程序代码
+	if (!m_pResult->empty())
+		m_pResult->clear();
+
+	std::vector<double>lowcost(m_pNodes->size(), INFINITE);
+	std::vector<size_t>adjvex(m_pNodes->size(), 0);
+	lowcost[0] = 0;
+	m_pResult->push_back(0);
+	for (size_t i = 1; i < lowcost.size(); ++i)
+	{
+		lowcost[i] = graph.GetElement(0, i);
+	}
+
+	for (size_t i = 1; i < m_pNodes->size(); ++i)
+	{
+		double min = INFINITY;
+		size_t j = 1; size_t k = 0;
+		while (j < m_pNodes->size())
+		{
+			if (lowcost[j] != 0 && lowcost[j] < min)
+			{
+				min = lowcost[j];
+				k = j;
+			}
+			j++;
+		}
+		m_pResult->push_back(k);
+		lowcost[k] = 0;
+
+		for (j = 1; j < m_pNodes->size(); ++j)
+		{
+			if (lowcost[j] != 0 && graph.GetElement(k, j) < lowcost[j])
+			{
+				lowcost[j] = graph.GetElement(k, j);
+				adjvex[j] = k;
+			}
+		}
+	}
+}
+
+
+void CTSPDoc::On2opt()
+{
+	// TODO: 在此添加命令处理程序代码
+	if (!m_pResult->empty())
+		m_pResult->clear();
+	
 }

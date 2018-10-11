@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include "Point2d.h"
+#include "CGraph.h"
 
 #pragma once
 
@@ -52,4 +53,7 @@ public:
 	std::shared_ptr<std::vector<CPoint2d>> m_pNodes;
 	double OnAlgGreedy();
 	std::shared_ptr<std::vector<size_t>> m_pResult;
+	CGraph graph;
+	afx_msg void OnMinCostTree();
+	afx_msg void On2opt();
 };

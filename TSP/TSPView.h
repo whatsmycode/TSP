@@ -57,6 +57,7 @@ public:
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnMinCostTree();
 };
 
 #ifndef _DEBUG  // TSPView.cpp 中的调试版本

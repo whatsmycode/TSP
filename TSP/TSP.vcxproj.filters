@@ -42,7 +42,10 @@
     <ClInclude Include="Point2d.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="GA.h">
+    <ClInclude Include="CGraph.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneticAlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,7 +68,7 @@
     <ClCompile Include="Point2d.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="GA.cpp">
+    <ClCompile Include="CGraph.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

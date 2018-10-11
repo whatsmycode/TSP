@@ -125,6 +125,8 @@ BEGIN
     POPUP "算法"
     BEGIN
         MENUITEM "贪心算法",                        ID_ALG_Greedy
+        MENUITEM "最小生成树",                       ID_MIN_COST_TREE
+        MENUITEM "2Opt",                        ID_2OPT
     END
 END
 
